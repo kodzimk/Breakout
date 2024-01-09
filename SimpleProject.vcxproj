@@ -87,7 +87,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>GLEW_STATIC;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\Кайсар Санжар Мама\Desktop\Libraries\glew-2.1.0-win32\glew-2.1.0\include;C:\Users\Кайсар Санжар Мама\Desktop\Libraries\glfw-3.3.8.bin.WIN32\glfw-3.3.8.bin.WIN32\include;C:\Users\Кайсар Санжар Мама\Downloads\Graphics Header File Setup for CodeBlocks\Graphics Header File Setup for CodeBlocks;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Кайсар Санжар Мама\Desktop\Libraries\glm-0.9.9.8\glm;C:\Users\Кайсар Санжар Мама\Desktop\Libraries\glew-2.1.0-win32\glew-2.1.0\include;C:\Users\Кайсар Санжар Мама\Desktop\Libraries\glfw-3.3.8.bin.WIN32\glfw-3.3.8.bin.WIN32\include;C:\Users\Кайсар Санжар Мама\Downloads\Graphics Header File Setup for CodeBlocks\Graphics Header File Setup for CodeBlocks;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -104,7 +104,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>GLEW_STATIC;WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\Кайсар Санжар Мама\Desktop\Libraries\glew-2.1.0-win32\glew-2.1.0\include;C:\Users\Кайсар Санжар Мама\Desktop\Libraries\glfw-3.3.8.bin.WIN32\glfw-3.3.8.bin.WIN32\include;C:\Users\Кайсар Санжар Мама\Downloads\Graphics Header File Setup for CodeBlocks\Graphics Header File Setup for CodeBlocks;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Кайсар Санжар Мама\Desktop\Libraries\glm-0.9.9.8\glm;C:\Users\Кайсар Санжар Мама\Desktop\Libraries\glew-2.1.0-win32\glew-2.1.0\include;C:\Users\Кайсар Санжар Мама\Desktop\Libraries\glfw-3.3.8.bin.WIN32\glfw-3.3.8.bin.WIN32\include;C:\Users\Кайсар Санжар Мама\Downloads\Graphics Header File Setup for CodeBlocks\Graphics Header File Setup for CodeBlocks;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

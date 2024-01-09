@@ -5,6 +5,9 @@
 #include<string>
 #include<sstream>
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #include"res/stb_image.h"
 
@@ -236,15 +239,21 @@ int main()
     
 
     int width=0, height=0, pp = 0;
-    unsigned char* buffer= stbi_load("niger.png", &width, &height, &pp, 0);
+    unsigned char* buffer= stbi_load("container.jpg", &width, &height, &pp, 0);
 
     unsigned int id = 0;
 
     GLCall(glGenTextures(1, &id));
     GLCall(glBindTexture(GL_TEXTURE_2D, id));
+
+    GLCall(glTextureParameteri(id, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
+    GLCall(glTextureParameteri(id, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
+    GLCall(glTextureParameteri(id, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
+    GLCall(glTextureParameteri(id, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
+
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, buffer);
 
-    glGenerateMipmap(GL_TEXTURE_2D);
+ 
     GLCall(glBindTexture(GL_TEXTURE_2D, 0));
 
 
@@ -256,7 +265,11 @@ int main()
    
     GLCall(glUniform1i(location, 0));
 
-   
+    glm::vec4 position = glm::vec4(1.0f, 0.0f, 0.0f,1.0f);
+    glm::mat4 transform = glm::mat4(1.0f);
+    transform = glm::scale(transform, glm::vec3(0.5f, 0.5f, 0.5f));
+  
+    location = glGetUniformLocation(program, "trans");
     
     while (!glfwWindowShouldClose(window))
     {       
@@ -266,8 +279,23 @@ int main()
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
         glBindTexture(GL_TEXTURE_2D,id);
 
+        if (glfwGetKey(window, GLFW_KEY_LEFT) > 0)
+        {
+            position.x -= 0.01f;
+           
+
+            transform = glm::translate(transform, glm::vec3(-position.x / 20,position.y,position.z));
+        }
+
+        if (glfwGetKey(window, GLFW_KEY_RIGHT) > 0)
+        {
+            position.x += 0.01f;  
+  
+            transform = glm::translate(transform, glm::vec3(position.x / 20,position.y,position.z));
+        }
+
+        GLCall(glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(transform)));
         GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL));
-       
  
         glfwSwapBuffers(window);
 
