@@ -11,5 +11,7 @@ uniform mat4 trans;
 void main()
 {
 gl_Position = trans * pos;
+
 tex_Coord = texCoord;
+
 };

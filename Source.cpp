@@ -283,8 +283,7 @@ int main()
         {
             position.x -= 0.01f;
            
-
-            transform = glm::translate(transform, glm::vec3(-position.x / 20,position.y,position.z));
+           transform = glm::translate(transform, glm::vec3(-position.x / 20,position.y,position.z));
         }
 
         if (glfwGetKey(window, GLFW_KEY_RIGHT) > 0)
