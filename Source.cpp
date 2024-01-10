@@ -114,7 +114,7 @@ int main()
         return -1;
 
 
-    window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
+    window = glfwCreateWindow(800, 600, "Hello World", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
@@ -238,67 +238,66 @@ int main()
 
     
 
-    int width=0, height=0, pp = 0;
-    unsigned char* buffer= stbi_load("container.jpg", &width, &height, &pp, 0);
-
-    unsigned int id = 0;
-
-    GLCall(glGenTextures(1, &id));
-    GLCall(glBindTexture(GL_TEXTURE_2D, id));
-
-    GLCall(glTextureParameteri(id, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
-    GLCall(glTextureParameteri(id, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
-    GLCall(glTextureParameteri(id, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
-    GLCall(glTextureParameteri(id, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
-
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, buffer);
-
- 
-    GLCall(glBindTexture(GL_TEXTURE_2D, 0));
-
-
-    stbi_image_free(buffer);
-
-  
-    int location = glGetUniformLocation(program, "u_Texture");
-    GLCall(glActiveTexture(GL_TEXTURE0));
+    unsigned int texture;
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+    // set the texture wrapping/filtering options (on the currently bound texture object)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    // load and generate the texture
+    int width, height, nrChannels;
+    unsigned char* data = stbi_load("container.jpg", &width, &height, &nrChannels, 0);
+    if (data)
+    {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
+    else
+    {
+        std::cout << "Failed to load texture" << std::endl;
+    }
+    stbi_image_free(data);
+    
+     int location = 0;
    
-    GLCall(glUniform1i(location, 0));
+    glActiveTexture(GL_TEXTURE0);
+    GLCall(glBindTexture(GL_TEXTURE_2D, texture));
 
-    glm::vec4 position = glm::vec4(1.0f, 0.0f, 0.0f,1.0f);
-    glm::mat4 transform = glm::mat4(1.0f);
-    transform = glm::scale(transform, glm::vec3(0.5f, 0.5f, 0.5f));
-  
-    location = glGetUniformLocation(program, "trans");
+    
+   
+
     
     while (!glfwWindowShouldClose(window))
     {       
         glClear(GL_COLOR_BUFFER_BIT);
 
+        glm::mat4 model = glm::mat4(1.0f);
+      
+
+        location = glGetUniformLocation(program, "model");
+        GLCall(glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(model)));
+
+        glm::mat4 projection;
+        projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.f);
+
+        int Plocation = glGetUniformLocation(program, "projection");
+        GLCall(glUniformMatrix4fv(Plocation, 1, GL_FALSE, &projection[0][0]));
+
+        glm::mat4 view = glm::mat4(1.0f);
+        view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+
+        int Vlocation = glGetUniformLocation(program, "view");
+        glUniformMatrix4fv(Vlocation, 1, GL_FALSE, &view[0][0]);
+
         glBindVertexArray(vao);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-        glBindTexture(GL_TEXTURE_2D,id);
-
-        if (glfwGetKey(window, GLFW_KEY_LEFT) > 0)
-        {
-            position.x -= 0.01f;
-           
-           transform = glm::translate(transform, glm::vec3(-position.x / 20,position.y,position.z));
-        }
-
-        if (glfwGetKey(window, GLFW_KEY_RIGHT) > 0)
-        {
-            position.x += 0.01f;  
-  
-            transform = glm::translate(transform, glm::vec3(position.x / 20,position.y,position.z));
-        }
-
-        GLCall(glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(transform)));
         GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL));
  
         glfwSwapBuffers(window);
 
-    
+ 
         glfwPollEvents();
     }
 
