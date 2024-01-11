@@ -18,7 +18,7 @@
    ASSERT(GlLogCall(#x,__FILE__,__LINE__))
 
 struct TexturePropr {
-    int height, width,pp;
+    int height, width, pp;
     unsigned char* buffer;
     unsigned int id;
 };
@@ -49,13 +49,13 @@ struct ShaderProgramSource {
 };
 
 
-static ShaderProgramSource ParseShaders(const std::string&filepath,const std::string& filepathFrag)
+static ShaderProgramSource ParseShaders(const std::string& filepath, const std::string& filepathFrag)
 {
     std::ifstream stream(filepath);
 
 
     enum class ShaderType {
-        NONE = -1,VERTEX = 0,FRAGMENT = 1
+        NONE = -1, VERTEX = 0, FRAGMENT = 1
     };
 
     std::string line;
@@ -66,9 +66,9 @@ static ShaderProgramSource ParseShaders(const std::string&filepath,const std::st
     {
         if (line.find("vertex") != std::string::npos)
         {
-              type = ShaderType::VERTEX;
-          
-        }  
+            type = ShaderType::VERTEX;
+
+        }
         else
         {
             ss[(int)type] << line << '\n';
@@ -84,7 +84,7 @@ static ShaderProgramSource ParseShaders(const std::string&filepath,const std::st
         if (line.find("#fragment") != std::string::npos)
         {
             type = ShaderType::FRAGMENT;
-         
+
         }
         else
         {
@@ -96,7 +96,7 @@ static ShaderProgramSource ParseShaders(const std::string&filepath,const std::st
 
     const char* vertexSS = ss[1].str().c_str();
 
-    return { ss[0].str(),ss[1].str()};
+    return { ss[0].str(),ss[1].str() };
 
 }
 
@@ -109,7 +109,7 @@ int main()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    
+
     if (!glfwInit())
         return -1;
 
@@ -121,7 +121,7 @@ int main()
         return -1;
     }
 
-  
+
     glfwMakeContextCurrent(window);
 
     if (!glewInit() == GLEW_OK)
@@ -174,7 +174,7 @@ int main()
 
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0);
     glEnableVertexAttribArray(1);
-  
+
 
     const char* vertex_source =
         "#version 330 core\n"
@@ -211,11 +211,11 @@ int main()
     const GLchar* b = source.FragmentSource.c_str();
 
     vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertex_shader, 1,&a, nullptr);
+    glShaderSource(vertex_shader, 1, &a, nullptr);
     glCompileShader(vertex_shader);
 
     fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragment_shader, 1,&b, nullptr);
+    glShaderSource(fragment_shader, 1, &b, nullptr);
     glCompileShader(fragment_shader);
 
     glAttachShader(program, vertex_shader);
@@ -226,7 +226,7 @@ int main()
     glDeleteShader(vertex_shader);
     glDeleteShader(fragment_shader);
 
-    
+
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
@@ -236,7 +236,7 @@ int main()
 
     stbi_set_flip_vertically_on_load(0);
 
-    
+
 
     unsigned int texture;
     glGenTextures(1, &texture);
@@ -244,11 +244,13 @@ int main()
     // set the texture wrapping/filtering options (on the currently bound texture object)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    // set texture filtering parameters
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     // load and generate the texture
     int width, height, nrChannels;
     unsigned char* data = stbi_load("container.jpg", &width, &height, &nrChannels, 0);
+
     if (data)
     {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
@@ -259,45 +261,45 @@ int main()
         std::cout << "Failed to load texture" << std::endl;
     }
     stbi_image_free(data);
-    
-     int location = 0;
-   
+
+    int location = 0;
+
     glActiveTexture(GL_TEXTURE0);
     GLCall(glBindTexture(GL_TEXTURE_2D, texture));
 
-    
-   
 
-    
+    glm::mat4 model = glm::mat4(1.0f);
+    model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(1.0f, 0.0f, 1.0f));
+
+    location = glGetUniformLocation(program, "model");
+    GLCall(glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(model)));
+
+    glm::mat4 projection = glm::mat4(1.0f);
+    projection = glm::perspective(glm::radians(45.0f), 800.f / 600.f, 0.1f, 100.f);
+
+    int Plocation = glGetUniformLocation(program, "projection");
+    GLCall(glUniformMatrix4fv(Plocation, 1, GL_FALSE,&projection[0][0]));
+
+    glm::mat4 view = glm::mat4(1.0f);
+    view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+
+    int Vlocation = glGetUniformLocation(program, "view");
+    GLCall(glUniformMatrix4fv(Vlocation, 1, GL_FALSE,&view[0][0]));
+
+
     while (!glfwWindowShouldClose(window))
-    {       
+    {
         glClear(GL_COLOR_BUFFER_BIT);
 
-        glm::mat4 model = glm::mat4(1.0f);
-      
-
-        location = glGetUniformLocation(program, "model");
-        GLCall(glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(model)));
-
-        glm::mat4 projection;
-        projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.f);
-
-        int Plocation = glGetUniformLocation(program, "projection");
-        GLCall(glUniformMatrix4fv(Plocation, 1, GL_FALSE, &projection[0][0]));
-
-        glm::mat4 view = glm::mat4(1.0f);
-        view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
-
-        int Vlocation = glGetUniformLocation(program, "view");
-        glUniformMatrix4fv(Vlocation, 1, GL_FALSE, &view[0][0]);
 
         glBindVertexArray(vao);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+        glBindTexture(GL_TEXTURE_2D, texture);
         GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL));
- 
+
         glfwSwapBuffers(window);
 
- 
+
         glfwPollEvents();
     }
 
@@ -305,4 +307,5 @@ int main()
 
     glfwTerminate();
     return 0;
+
 }
