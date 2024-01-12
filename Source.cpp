@@ -10,6 +10,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include"res/stb_image.h"
+#include"res/linear_algebros.h"
 
 #define ASSERT(x) if(!(x)) __debugbreak();
 
@@ -267,30 +268,22 @@ int main()
     glActiveTexture(GL_TEXTURE0);
     GLCall(glBindTexture(GL_TEXTURE_2D, texture));
 
+   
+    vector3 position = {0.2f,0.5f,0.0f};
 
-    glm::mat4 model = glm::mat4(1.0f);
-    model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(1.0f, 0.0f, 1.0f));
-
-    location = glGetUniformLocation(program, "model");
-    GLCall(glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(model)));
-
-    glm::mat4 projection = glm::mat4(1.0f);
-    projection = glm::perspective(glm::radians(45.0f), 800.f / 600.f, 0.1f, 100.f);
-
-    int Plocation = glGetUniformLocation(program, "projection");
-    GLCall(glUniformMatrix4fv(Plocation, 1, GL_FALSE,&projection[0][0]));
-
-    glm::mat4 view = glm::mat4(1.0f);
-    view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
-
-    int Vlocation = glGetUniformLocation(program, "view");
-    GLCall(glUniformMatrix4fv(Vlocation, 1, GL_FALSE,&view[0][0]));
-
+    mat4 model = matrix_tranform_rotation(position,75.f);
 
     while (!glfwWindowShouldClose(window))
     {
         glClear(GL_COLOR_BUFFER_BIT);
 
+        if (glfwGetKey(window, GLFW_KEY_LEFT) > 0)
+            position.entries[0] += 0.01;
+
+        model = matrix_tranform_rotation(position, 75.f);
+        
+        location = glGetUniformLocation(program, "model");
+        GLCall(glUniformMatrix4fv(location, 1, GL_FALSE, model.entries));
 
         glBindVertexArray(vao);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);

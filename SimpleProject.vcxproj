@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="res\linear_algebros.cpp" />
     <ClCompile Include="res\stb_image.cpp" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
@@ -27,6 +28,7 @@
     <None Include="res\Vertex_Shader.vertex" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="res\linear_algebros.h" />
     <ClInclude Include="res\stb_image.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
