@@ -27,13 +27,13 @@ const float ZOOM = 30.0f;
 class Camera
 {
 public:
-    // camera Attributes
+    
     glm::vec3 Position;
     glm::vec3 Front;
     glm::vec3 Up;
     glm::vec3 Right;
     glm::vec3 WorldUp;
-    // euler Angles
+   
     float Yaw;
     float Pitch;
     // camera options
@@ -48,7 +48,7 @@ public:
         WorldUp = up;
         Yaw = yaw;
         Pitch = pitch;
-        Zoom = 45.f;
+      
         updateCameraVectors();
     }
     // constructor with scalar values
@@ -58,7 +58,7 @@ public:
         WorldUp = glm::vec3(upX, upY, upZ);
         Yaw = yaw;
         Pitch = pitch;
-        Zoom = 45.f;
+     
         updateCameraVectors();
     }
 
@@ -69,15 +69,16 @@ public:
 
     void ProcessKeyboard(Camera_Movement direction, float deltaTime)
     {
-        float velocity = MovementSpeed * deltaTime;
+        float velocity = deltaTime * MovementSpeed;
         if (direction == FORWARD)
-            Position += Front * velocity;
+            Position += velocity * Front;
         if (direction == BACKWARD)
-            Position -= Front * velocity;
-        if (direction == LEFT)
-            Position -= Right * velocity;
+            Position -= velocity * Front;
         if (direction == RIGHT)
-            Position += Right * velocity;
+            Position += velocity * Right;
+        if (direction == LEFT)
+            Position -= velocity * Right;
+
     }
 
     void ProcessMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch = true)
@@ -94,8 +95,7 @@ public:
 
 private:
     void updateCameraVectors()
-    {
-      
+    { 
         glm::vec3 front;
         front.x = cos(glm::radians(Yaw)) * cos(glm::radians(Pitch));
         front.y = sin(glm::radians(Pitch));

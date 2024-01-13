@@ -295,6 +295,8 @@ int main()
 
     glm::mat4 model = glm::mat4(1.0f);
 
+    model = glm::rotate(model, 90.f, { .0f,0.0f,1.0f });
+
     glEnable(GL_DEPTH_TEST);
 
     while (!glfwWindowShouldClose(window))
