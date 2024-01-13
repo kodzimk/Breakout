@@ -58,3 +58,95 @@ mat4 matrix_tranform_rotation(vector3 position ,float a)
 
 	return matrix;
 }
+
+mat4 look_at(vector3 from, vector3 to)
+{
+	vector3 global_up = { 0.0f,0.0f,1.0f };
+
+	vector3 f = {
+		to.entries[0] - from.entries[0],
+		to.entries[1] - from.entries[1],
+		to.entries[2] - from.entries[2]
+	};
+	f = normalize(f);
+
+	vector3 r = normalize(cross(f, global_up));
+	vector3 u = normalize(cross(r, f));
+
+	mat4 matrix;
+
+
+	matrix.entries[0] = r.entries[0];
+	matrix.entries[1] = u.entries[0];
+	matrix.entries[2] = -f.entries[0];
+	matrix.entries[3] = 0;
+
+	matrix.entries[4] = r.entries[1];
+	matrix.entries[5] = u.entries[1];
+	matrix.entries[6] = -f.entries[1];
+	matrix.entries[7] = 0;
+
+
+	matrix.entries[8] = r.entries[2];
+	matrix.entries[9] = u.entries[2];
+	matrix.entries[10] = -f.entries[2];
+	matrix.entries[11] = 0;
+
+	matrix.entries[12] = -dot(r, from);
+	matrix.entries[13] = -dot(u,from);
+	matrix.entries[14] = dot(f,from);
+	matrix.entries[15] = 1.0f;
+
+	return matrix;
+}
+
+float dot(vector3 u, vector3 v)
+{
+	return u.entries[0] * v.entries[0] + u.entries[1] * v.entries[1] + u.entries[2] * v.entries[2];
+}
+
+vector3 normalize(vector3 v)
+{
+	vector3 u;
+
+	float magnitude = sqrtf(dot(v, v));
+
+	u.entries[0] = v.entries[0] / magnitude;
+	u.entries[1] = v.entries[1] / magnitude;
+	u.entries[2] = v.entries[2] / magnitude;
+
+	return u;
+}
+
+vector3 cross(vector3 u, vector3 v) {
+	vector3 w;
+
+	w.entries[0] = u.entries[1] * v.entries[2] - u.entries[2] * v.entries[1];
+	w.entries[1] = -(u.entries[0] * v.entries[2] - u.entries[2] * v.entries[0]);
+	w.entries[2] = u.entries[0] * v.entries[1] - u.entries[1] * v.entries[0];
+
+	return w;
+}
+
+mat4 projection_create(float fovy, float aspect, float near, float fear) {
+	fovy = fovy * 3.14 / 360.f;
+
+	float t = tanf(fovy);
+	float n = -near;
+	float f = -fear;
+	
+	mat4 matrix;
+
+	for (int i = 0; i < 16; ++i)
+	{
+		matrix.entries[i] = 0.0f;
+	}
+
+	matrix.entries[0] = 1.0f / (aspect * t);
+	matrix.entries[5] = 1.0f / t;
+	matrix.entries[10] = -(n + f) / (n - f);
+	matrix.entries[11] = -1.0f;
+	matrix.entries[14] = 2 * n * f / (n - f);
+
+	return matrix;
+}

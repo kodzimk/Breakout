@@ -5,9 +5,7 @@
 #include<string>
 #include<sstream>
 
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
+#include"Camera.h"
 
 #include"res/stb_image.h"
 #include"res/linear_algebros.h"
@@ -269,21 +267,37 @@ int main()
     GLCall(glBindTexture(GL_TEXTURE_2D, texture));
 
    
-    vector3 position = {0.2f,0.5f,0.0f};
+    glm::vec3 camera_positon = { 0.0f,0.0f,0.0f };
+    glm::vec3 eulers = { 0.0f,0.0f,0.0f };
 
-    mat4 model = matrix_tranform_rotation(position,75.f);
+    CameraComponent cameraComponent;
+    Camera camera(program);
+
+    glm::mat4 projection = glm::perspective(45.0f,800/600.f,0.1f,100.f);
+
+    location = glGetUniformLocation(program, "projection");
+    glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(projection));
+
+    glm::mat4 model = glm::mat4(1.0f);
 
     while (!glfwWindowShouldClose(window))
     {
         glClear(GL_COLOR_BUFFER_BIT);
 
-        if (glfwGetKey(window, GLFW_KEY_LEFT) > 0)
-            position.entries[0] += 0.01;
 
-        model = matrix_tranform_rotation(position, 75.f);
-        
+        bool isTrue = camera.update(window, camera_positon, cameraComponent, eulers);
+
+        if (isTrue)
+            return -1;
+
+        model = glm::translate(model, camera_positon);
+        model = glm::rotate(
+            model, glm::radians(eulers.z),
+            { 0.0f, 0.0f, 1.0f });
+
+                
         location = glGetUniformLocation(program, "model");
-        GLCall(glUniformMatrix4fv(location, 1, GL_FALSE, model.entries));
+        GLCall(glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(model)));
 
         glBindVertexArray(vao);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);

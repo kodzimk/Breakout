@@ -16,6 +16,9 @@
     <ClCompile Include="res\linear_algebros.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="res\Vertex_Shader.vertex" />
@@ -24,5 +27,8 @@
   <ItemGroup>
     <ClInclude Include="res\stb_image.h" />
     <ClInclude Include="res\linear_algebros.h" />
+    <ClInclude Include="Camera.h" />
+    <ClInclude Include="res\Component\transform_component.h" />
+    <ClInclude Include="res\Component\cameta_component.h" />
   </ItemGroup>
 </Project>
