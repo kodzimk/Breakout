@@ -3,12 +3,15 @@
 
 out vec4 color;
 
-in vec2 tex_Coord;
 
-uniform sampler2D u_Texture;
+uniform vec3 firstLight;
+uniform vec3 secondLight;
 
 void main()
 {
-vec4 tex_color = texture(u_Texture,tex_Coord);
-color = tex_color;
+ float ambientStrength = 0.1;
+ vec3 ambient = ambientStrength * firstLight;
+
+ vec3 result = ambient *secondLight;
+color = vec4(result,1.0f);
 };
