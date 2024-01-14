@@ -118,7 +118,7 @@ int main()
         return -1;
 
 
-    window = glfwCreateWindow(1000, 800, "Hello World", NULL, NULL);
+    window = glfwCreateWindow(1200, 1000, "Hello World", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
@@ -276,7 +276,13 @@ int main()
 
 
  
-    Camera camera(800,600,{0.0f,0.0f,2.0f});
+    Camera camera(800.f,600.f,{0.0f,0.0f,2.0f});
+    glm::mat4 model = glm::mat4(1.0f);
+    model = glm::translate(model, { 0.f,0.5f,0.f });
+
+    glm::mat4 model2 = glm::mat4(1.0f);
+    model2 = glm::translate(model2, { 0.f,-0.5f,0.f });
+
 
     glEnable(GL_DEPTH_TEST);
 
@@ -296,6 +302,12 @@ int main()
         glBindVertexArray(vao);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
         glBindTexture(GL_TEXTURE_2D, texture);
+
+
+        GLCall(glUniformMatrix4fv(glGetUniformLocation(program, "model"), 1, GL_FALSE, glm::value_ptr(model2)));
+        GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL));
+
+        GLCall(glUniformMatrix4fv(glGetUniformLocation(program, "model"), 1, GL_FALSE, glm::value_ptr(model)));
         GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL));
 
 
