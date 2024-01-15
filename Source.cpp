@@ -133,29 +133,52 @@ int main()
     if (!glewInit() == GLEW_OK)
         return -1;
 
-    float block[] = {
-        -0.5f,-0.5f,
-        0.5f,-0.5f,
-        0.5f,0.5f,
-        -0.5f,0.5f
+    float vertices[] =
+    {
+        -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+        0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+        0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+        0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+
+        -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+        0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+        0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+        0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+
+        -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+        -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+        -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+        -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+        -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+        -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+
+        0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+        0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+        0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+        0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+        0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+        0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+
+        -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+        0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+        0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+        0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+
+        -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+        0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+        0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+        0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
     };
-
-    unsigned int indices[] = {
-        0,1,2,
-        2,3,0
-    };
-
-
-    float texture_coord[] = {
-    0.0f,1.0f,
-    1.0f,1.0f,
-    1.0f,0.0f,
-    0.0f,0.0f
-    };
-
 
     unsigned int vbo;
-    unsigned int vbo_color;
     unsigned int vao;
 
     GLCall(glGenVertexArrays(1, &vao));
@@ -164,50 +187,20 @@ int main()
 
     glGenBuffers(1, &vbo);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 8, block, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0);
-    glEnableVertexAttribArray(0);
+    GLCall(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 6, 0));
+    GLCall(glEnableVertexAttribArray(0));
 
-    unsigned int ibo;
-    glGenBuffers(1, &ibo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * 6, indices, GL_STATIC_DRAW);
+    GLCall(glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 6, (void*)(3* sizeof(float))));
+    GLCall(glEnableVertexAttribArray(1));
 
-    glGenBuffers(1, &vbo_color);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo_color);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 2 * 4, texture_coord, GL_STATIC_DRAW);
-
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0);
-    glEnableVertexAttribArray(1);
-
-
-    const char* vertex_source =
-        "#version 330 core\n"
-        "layout(location = 0) in vec4 pos;\n"
-        "layout(location = 1)in vec4 color;\n"
-        "out vec4 u_Color;\n"
-        "void main()\n"
-        "{\n"
-        "gl_Position = pos;\n"
-        "u_Color = color;\n"
-        "}\n";
-
-
-    const char* fragment_source =
-        "#version 330 core\n"
-        "out vec4 FragColor;"
-        "in vec4 u_Color;\n"
-        "void main()\n"
-        "{\n"
-        "FragColor = u_Color;\n"
-        "}\n";
 
     glfwSwapInterval(1);
 
 
-
     ShaderProgramSource source = ParseShaders("res/Vertex_Shader.vertex", "res/Frag_Shader.frag");
+    ShaderProgramSource source2 = ParseShaders("res/lamp.vs", "res/lamp.frag");
 
     unsigned int program = glCreateProgram();
 
@@ -217,12 +210,12 @@ int main()
     const GLchar* b = source.FragmentSource.c_str();
 
     vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertex_shader, 1, &a, nullptr);
-    glCompileShader(vertex_shader);
+    GLCall(glShaderSource(vertex_shader, 1, &a, nullptr));
+    GLCall(glCompileShader(vertex_shader));
 
     fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragment_shader, 1, &b, nullptr);
-    glCompileShader(fragment_shader);
+    GLCall(glShaderSource(fragment_shader, 1, &b, nullptr));
+    GLCall(glCompileShader(fragment_shader));
 
     glAttachShader(program, vertex_shader);
     glAttachShader(program, fragment_shader);
@@ -232,48 +225,71 @@ int main()
     glDeleteShader(vertex_shader);
     glDeleteShader(fragment_shader);
 
-
-
     glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
     glUseProgram(program);
 
+    unsigned int lamp = glCreateProgram();
 
- 
+    unsigned int vertex_shader2, fragment_shader2;
+
+    const GLchar* a2 = source2.VertexSource.c_str();
+    const GLchar* b2 = source2.FragmentSource.c_str();
+
+    vertex_shader2 = glCreateShader(GL_VERTEX_SHADER);
+    GLCall(glShaderSource(vertex_shader2, 1, &a2, nullptr));
+    GLCall(glCompileShader(vertex_shader2));
+
+    fragment_shader2 = glCreateShader(GL_FRAGMENT_SHADER);
+    GLCall(glShaderSource(fragment_shader2, 1, &b2, nullptr));
+    GLCall(glCompileShader(fragment_shader2));
+
+    glAttachShader(lamp, vertex_shader2);
+    glAttachShader(lamp, fragment_shader2);
+
+    glLinkProgram(lamp);
+
+    glDeleteShader(vertex_shader2);
+    glDeleteShader(fragment_shader2);
+
     Camera camera(800.f,600.f,{0.0f,0.0f,2.0f});
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::translate(model, { 0.f,0.5f,0.f });
 
     glm::mat4 model2 = glm::mat4(1.0f);
-    model2 = glm::translate(model2, { 0.f,-0.5f,0.f });
+    model2 = glm::translate(model, { 2.f,0.5f,1.f });
+    
 
+    glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
+
+   GLCall(glUniform3fv(glGetUniformLocation(program, "lightColor"),1, glm::value_ptr(glm::vec3(1.0f,1.0f,1.0f))));
+   GLCall(glUniform3fv(glGetUniformLocation(program, "objectColor"), 1,glm::value_ptr(glm::vec3(1.0f, 0.5f, 0.31f))));
+
+   GLCall(glUniform3fv(glGetUniformLocation(program, "lightPos"), 1,glm::value_ptr(glm::vec3(lightPos.x,lightPos.y,lightPos.z))));
+   GLCall(glUniform3fv(glGetUniformLocation(program, "viewPos"),1,glm::value_ptr(glm::vec3(camera.Position.x,camera.Position.y,camera.Position.z))));
 
     glEnable(GL_DEPTH_TEST);
-
-    glm::vec3 firstLight = { 1.0f, 0.5f, 0.31f };
-    glm::vec3 secondLight = { 1.0f, 1.0f, 1.0f };
-
-    glUniform3fv(glGetUniformLocation(program, "firstLight"), 1, glm::value_ptr(firstLight));
-    glUniform3fv(glGetUniformLocation(program, "secondLight"), 1, glm::value_ptr(secondLight));
 
     while (!glfwWindowShouldClose(window))
     {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        glUseProgram(program);
         camera.Inputs(window);
         camera.Matrix(45.f,0.1f,100.f,program,"camera");
       
 
         glBindVertexArray(vao);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-
-        GLCall(glUniformMatrix4fv(glGetUniformLocation(program, "model"), 1, GL_FALSE, glm::value_ptr(model2)));
-        GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL));
-
         GLCall(glUniformMatrix4fv(glGetUniformLocation(program, "model"), 1, GL_FALSE, glm::value_ptr(model)));
-        GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL));
+        GLCall(glDrawArrays(GL_TRIANGLES, 0, 36));
+
+
+        glUseProgram(lamp);
+        camera.Matrix(45.f, 0.1f, 100.f, program, "camera");
+        GLCall(glUniformMatrix4fv(glGetUniformLocation(program, "model"), 1, GL_FALSE, glm::value_ptr(model2)));
+        GLCall(glDrawArrays(GL_TRIANGLES, 0, 36));
+
 
 
 

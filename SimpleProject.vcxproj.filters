@@ -23,6 +23,8 @@
   <ItemGroup>
     <None Include="res\Vertex_Shader.vertex" />
     <None Include="res\Frag_Shader.frag" />
+    <None Include="res\lamp.frag" />
+    <None Include="res\lamp.vs" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="res\stb_image.h" />
