@@ -4,12 +4,10 @@
 #include<fstream>
 #include<string>
 #include<sstream>
-
+#include<vector>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-
-#include"Camera.h"
 
 #include"res/stb_image.h"
 #include"res/linear_algebros.h"
@@ -104,6 +102,34 @@ static ShaderProgramSource ParseShaders(const std::string& filepath, const std::
 
 }
 
+std::vector<glm::vec3> vertices;
+
+void buildCircle(float radius, int vCount)
+{
+    float angle = 360.0f / vCount;
+
+    int triangleCount = vCount - 2;
+
+    std::vector<glm::vec3> temp;
+    // positions
+    for (int i = 0; i < vCount; i++)
+    {
+        float currentAngle = angle * i;
+        float x = radius * cos(glm::radians(currentAngle));
+        float y = radius * sin(glm::radians(currentAngle));
+        float z = 0.0f;
+
+        temp.push_back(glm::vec3(x, y, z));
+    }
+
+    for (int i = 0; i < triangleCount; i++)
+    {
+        vertices.push_back(temp[0]);
+        vertices.push_back(temp[i + 1]);
+        vertices.push_back(temp[i + 2]);
+    }
+}
+
 
 int main()
 {
@@ -133,74 +159,38 @@ int main()
     if (!glewInit() == GLEW_OK)
         return -1;
 
-    float vertices[] =
+    float vertices2[] =
     {
-        -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-        0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-        0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-        0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-        -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-
-        -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-        0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-        0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-        0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-
-        -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-        -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-        -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-        -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-        -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-        -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-
-        0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-        0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-        0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-        0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-        0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-        0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-
-        -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-        0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-        0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-        0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-
-        -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
-        0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
-        0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-        0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-        -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
+       -1.f,1.f,
+       -1.f,-1.0f,
+       1.0f,-1.0f,
+       -1.f,-1.0f,
+       1.0f,-1.0f,
+       1.0f,1.0f
     };
 
     unsigned int vbo;
     unsigned int vao;
+    unsigned int vbo2;
+    unsigned int vao2;
+
+
 
     GLCall(glGenVertexArrays(1, &vao));
     GLCall(glBindVertexArray(vao));
 
 
-    glGenBuffers(1, &vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    GLCall(glGenBuffers(1, &vbo));
+    GLCall(glBindBuffer(GL_ARRAY_BUFFER, vbo));
+    GLCall(glBufferData(GL_ARRAY_BUFFER, sizeof(vertices2), vertices2, GL_STATIC_DRAW));
+    
 
-    GLCall(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 6, 0));
+    GLCall(glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0));
     GLCall(glEnableVertexAttribArray(0));
 
-    GLCall(glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 6, (void*)(3* sizeof(float))));
-    GLCall(glEnableVertexAttribArray(1));
-
-
-    glfwSwapInterval(1);
-
+    buildCircle(0.1, 128);
 
     ShaderProgramSource source = ParseShaders("res/Vertex_Shader.vertex", "res/Frag_Shader.frag");
-    ShaderProgramSource source2 = ParseShaders("res/lamp.vs", "res/lamp.frag");
 
     unsigned int program = glCreateProgram();
 
@@ -225,72 +215,46 @@ int main()
     glDeleteShader(vertex_shader);
     glDeleteShader(fragment_shader);
 
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
-
     glUseProgram(program);
 
-    unsigned int lamp = glCreateProgram();
 
-    unsigned int vertex_shader2, fragment_shader2;
+    GLCall(glGenVertexArrays(1, &vao2));
+    GLCall(glBindVertexArray(vao2));
 
-    const GLchar* a2 = source2.VertexSource.c_str();
-    const GLchar* b2 = source2.FragmentSource.c_str();
+    GLCall(glGenBuffers(1, &vbo2));
+    GLCall(glBindBuffer(GL_ARRAY_BUFFER, vbo2));
+    GLCall(glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * vertices.size(), &vertices[0], GL_STATIC_DRAW));
 
-    vertex_shader2 = glCreateShader(GL_VERTEX_SHADER);
-    GLCall(glShaderSource(vertex_shader2, 1, &a2, nullptr));
-    GLCall(glCompileShader(vertex_shader2));
 
-    fragment_shader2 = glCreateShader(GL_FRAGMENT_SHADER);
-    GLCall(glShaderSource(fragment_shader2, 1, &b2, nullptr));
-    GLCall(glCompileShader(fragment_shader2));
+    GLCall(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, (void*)0));
+    GLCall(glEnableVertexAttribArray(0));
 
-    glAttachShader(lamp, vertex_shader2);
-    glAttachShader(lamp, fragment_shader2);
 
-    glLinkProgram(lamp);
-
-    glDeleteShader(vertex_shader2);
-    glDeleteShader(fragment_shader2);
-
-    Camera camera(800.f,600.f,{0.0f,0.0f,2.0f});
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+ 
     glm::mat4 model = glm::mat4(1.0f);
-    model = glm::translate(model, { 0.f,0.5f,0.f });
+    model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
 
     glm::mat4 model2 = glm::mat4(1.0f);
-    model2 = glm::translate(model, { 2.f,0.5f,1.f });
+    model2 = glm::translate(model, glm::vec3(0.0f, 0.5f, 0.0f));
+
     
-
-    glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
-
-   GLCall(glUniform3fv(glGetUniformLocation(program, "lightColor"),1, glm::value_ptr(glm::vec3(1.0f,1.0f,1.0f))));
-   GLCall(glUniform3fv(glGetUniformLocation(program, "objectColor"), 1,glm::value_ptr(glm::vec3(1.0f, 0.5f, 0.31f))));
-
-   GLCall(glUniform3fv(glGetUniformLocation(program, "lightPos"), 1,glm::value_ptr(glm::vec3(lightPos.x,lightPos.y,lightPos.z))));
-   GLCall(glUniform3fv(glGetUniformLocation(program, "viewPos"),1,glm::value_ptr(glm::vec3(camera.Position.x,camera.Position.y,camera.Position.z))));
-
-    glEnable(GL_DEPTH_TEST);
-
+ 
     while (!glfwWindowShouldClose(window))
     {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        glUseProgram(program);
-        camera.Inputs(window);
-        camera.Matrix(45.f,0.1f,100.f,program,"camera");
-      
-
         glBindVertexArray(vao);
+        glUniform3fv(glGetUniformLocation(program, "Color"), 1, glm::value_ptr(glm::vec3(0.5f, 0.5f, 0.5f)));
         GLCall(glUniformMatrix4fv(glGetUniformLocation(program, "model"), 1, GL_FALSE, glm::value_ptr(model)));
-        GLCall(glDrawArrays(GL_TRIANGLES, 0, 36));
+        GLCall(glDrawArrays(GL_TRIANGLES, 0, 12));
 
-
-        glUseProgram(lamp);
-        camera.Matrix(45.f, 0.1f, 100.f, program, "camera");
+  
+        glBindVertexArray(vao2);
+        glUniform3fv(glGetUniformLocation(program, "Color"), 1, glm::value_ptr(glm::vec3(1.f, 1.f, 0.0f)));
         GLCall(glUniformMatrix4fv(glGetUniformLocation(program, "model"), 1, GL_FALSE, glm::value_ptr(model2)));
-        GLCall(glDrawArrays(GL_TRIANGLES, 0, 36));
-
-
+        GLCall(glDrawArrays(GL_TRIANGLES, 0, vertices.size()));
 
 
         glfwSwapBuffers(window);
