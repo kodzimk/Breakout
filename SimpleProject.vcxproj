@@ -20,21 +20,15 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
-    <ClCompile Include="res\linear_algebros.cpp" />
     <ClCompile Include="res\stb_image.cpp" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\Frag_Shader.frag" />
-    <None Include="res\lamp.frag" />
-    <None Include="res\lamp.vs" />
     <None Include="res\Vertex_Shader.vertex" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
-    <ClInclude Include="res\Component\cameta_component.h" />
-    <ClInclude Include="res\Component\transform_component.h" />
-    <ClInclude Include="res\linear_algebros.h" />
     <ClInclude Include="res\stb_image.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
