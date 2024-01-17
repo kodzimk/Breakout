@@ -9,9 +9,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include"res/stb_image.h"
 
-
+#include"stb_image.h"
 
 #define ASSERT(x) if(!(x)) __debugbreak();
 

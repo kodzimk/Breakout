@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="res\stb_image.cpp" />
+    <ClCompile Include="src\stb_image.cpp" />
     <ClCompile Include="src\Source.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -27,7 +27,7 @@
     <None Include="res\Vertex_Shader.vertex" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="res\stb_image.h" />
+    <ClInclude Include="src\stb_image.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
