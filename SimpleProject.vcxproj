@@ -19,16 +19,14 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="res\stb_image.cpp" />
-    <ClCompile Include="Source.cpp" />
+    <ClCompile Include="src\Source.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\Frag_Shader.frag" />
     <None Include="res\Vertex_Shader.vertex" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Camera.h" />
     <ClInclude Include="res\stb_image.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
