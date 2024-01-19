@@ -13,12 +13,21 @@
     <ClCompile Include="src\stb_image.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="src\Shaders\shaders.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="src\object.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="res\Vertex_Shader.vertex" />
-    <None Include="res\Frag_Shader.frag" />
+    <None Include="src\Shaders\Vertex_Shader.vertex" />
+    <None Include="src\Shaders\Frag_Shader.frag" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\stb_image.h" />
+    <ClInclude Include="src\Shaders\shaders.h" />
+    <ClInclude Include="src\Shaders\config.h" />
+    <ClInclude Include="src\object.h" />
   </ItemGroup>
 </Project>

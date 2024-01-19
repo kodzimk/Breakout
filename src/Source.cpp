@@ -1,54 +1,15 @@
-#include<GL/glew.h>
-#include<GLFW/glfw3.h>
-#include<iostream>
-#include<fstream>
-#include<string>
-#include<sstream>
-#include<vector>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-
-
+#include"object.h"
 #include"stb_image.h"
 
-#define ASSERT(x) if(!(x)) __debugbreak();
 
-#define GLCall(x) GLClearError();\
-   x;\
-   ASSERT(GlLogCall(#x,__FILE__,__LINE__))
-
-struct TexturePropr {
-    int height, width, pp;
-    unsigned char* buffer;
-    unsigned int id;
-};
-
-static void GLClearError()
-{
-    while (glGetError() != GL_NO_ERROR);
-
-}
-
-static bool GlLogCall(const char* function, const char* file, int line)
-{
-    while (GLenum error = glGetError())
-    {
-        std::cout << "[OpenglError] (" << error << ")" << function << " " << file << ":" << line << std::endl;
-        return false;
-    }
-
-    return true;
-}
-
+#define HEIGHT 800
+#define WIDTH  1000
 
 
 struct ShaderProgramSource {
     std::string VertexSource;
     std::string FragmentSource;
 };
-
-
 static ShaderProgramSource ParseShaders(const std::string& filepath, const std::string& filepathFrag)
 {
     std::ifstream stream(filepath);
@@ -100,6 +61,7 @@ static ShaderProgramSource ParseShaders(const std::string& filepath, const std::
 
 }
 
+
 int main()
 {
     GLFWwindow* window;
@@ -113,7 +75,7 @@ int main()
         return -1;
 
 
-    window = glfwCreateWindow(1200, 1000, "Hello World", NULL, NULL);
+    window = glfwCreateWindow(WIDTH, HEIGHT, "Hello World", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
@@ -124,26 +86,47 @@ int main()
     glfwMakeContextCurrent(window);
 
 
-
     if (!glewInit() == GLEW_OK)
         return -1;
 
+    float vertex[] = {
+     1.0f,1.0f,
+     -1.0f,1.0f,
+     -1.0f,-1.0f
+    };
 
-    ShaderProgramSource source = ParseShaders("res/Vertex_Shader.vertex", "res/Frag_Shader.frag");
+    unsigned int objectVao = 0;
+    unsigned int program = 0;
+    unsigned int buffer = 0;
 
-    unsigned int program = glCreateProgram();
+    glGenVertexArrays(1, &objectVao);
+    glBindVertexArray(objectVao);
+
+    glGenBuffers(1, &buffer);
+    glBindBuffer(GL_ARRAY_BUFFER, buffer);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6, vertex, GL_STATIC_DRAW);
+
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, (void*)0);
+    glBindVertexArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+
+    ShaderProgramSource source = ParseShaders("src/Shaders/Vertex_Shader.vertex", "src/Shaders/Frag_Shader.frag");
+
+    const GLchar* vetrtex = source.VertexSource.c_str();
+    const GLchar* fragment = source.FragmentSource.c_str();
+
+    program = glCreateProgram();
 
     unsigned int vertex_shader, fragment_shader;
 
-    const GLchar* a = source.VertexSource.c_str();
-    const GLchar* b = source.FragmentSource.c_str();
-
     vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-    GLCall(glShaderSource(vertex_shader, 1, &a, nullptr));
+    GLCall(glShaderSource(vertex_shader, 1, &vetrtex, nullptr));
     GLCall(glCompileShader(vertex_shader));
 
     fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
-    GLCall(glShaderSource(fragment_shader, 1, &b, nullptr));
+    GLCall(glShaderSource(fragment_shader, 1, &fragment, nullptr));
     GLCall(glCompileShader(fragment_shader));
 
     glAttachShader(program, vertex_shader);
@@ -154,19 +137,22 @@ int main()
     glDeleteShader(vertex_shader);
     glDeleteShader(fragment_shader);
 
-    glUseProgram(program);
- 
+
     while (!glfwWindowShouldClose(window))
     {
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT);
 
         glfwSwapBuffers(window);
+
+        glUseProgram(program);
+        GLCall(glBindVertexArray(objectVao));
+        GLCall(glDrawArrays(GL_TRIANGLES, 0, 3));
 
 
         glfwPollEvents();
     }
 
-
+  
     glfwTerminate();
     return 0;
 
