@@ -1,5 +1,4 @@
-#include"object.h"
-#include"stb_image.h"
+#include"config.h"
 
 
 #define HEIGHT 800
@@ -90,34 +89,34 @@ int main()
         return -1;
 
     float vertex[] = {
-     1.0f,1.0f,
-     -1.0f,1.0f,
-     -1.0f,-1.0f
+      0.5f, -0.5f,   // bottom right
+    -0.5f, -0.5f,  // bottom left
+     0.0f,  0.5f
     };
 
-    unsigned int objectVao = 0;
-    unsigned int program = 0;
-    unsigned int buffer = 0;
+    unsigned int VAO,VBO;
+   
 
-    glGenVertexArrays(1, &objectVao);
-    glBindVertexArray(objectVao);
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+    // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
+    glBindVertexArray(VAO);
 
-    glGenBuffers(1, &buffer);
-    glBindBuffer(GL_ARRAY_BUFFER, buffer);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6, vertex, GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertex), vertex, GL_STATIC_DRAW);
 
+    // position attribute
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, (void*)0);
-    glBindVertexArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 
-    ShaderProgramSource source = ParseShaders("src/Shaders/Vertex_Shader.vertex", "src/Shaders/Frag_Shader.frag");
+    ShaderProgramSource source = ParseShaders("src/Vertex_Shader.vertex", "src/Frag_Shader.frag");
+    std::cout << source.FragmentSource;
 
     const GLchar* vetrtex = source.VertexSource.c_str();
     const GLchar* fragment = source.FragmentSource.c_str();
 
-    program = glCreateProgram();
+    unsigned int program = glCreateProgram();
 
     unsigned int vertex_shader, fragment_shader;
 
@@ -138,21 +137,22 @@ int main()
     glDeleteShader(fragment_shader);
 
 
+    glUseProgram(program);
+
+
     while (!glfwWindowShouldClose(window))
     {
         glClear(GL_COLOR_BUFFER_BIT);
 
-        glfwSwapBuffers(window);
 
-        glUseProgram(program);
-        GLCall(glBindVertexArray(objectVao));
+        GLCall(glBindVertexArray(VAO));
         GLCall(glDrawArrays(GL_TRIANGLES, 0, 3));
 
 
+        glfwSwapBuffers(window);
         glfwPollEvents();
     }
 
-  
     glfwTerminate();
     return 0;
 
