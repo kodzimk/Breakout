@@ -9,6 +9,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+
+#include"stb_image.h"
+
 struct Object {
     bool isAlive;
     glm::mat4 model;
@@ -99,6 +102,34 @@ static ShaderProgramSource ParseShaders(const std::string& filepath, const std::
 
 }
 
+std::vector<glm::vec3> verticesC; //
+
+void buildCircle(float radius, int vCount)
+{
+    float angle = 360.0f / vCount;
+
+    int triangleCount = vCount - 2;
+
+    std::vector<glm::vec3> temp;
+    // positions
+    for (int i = 0; i < vCount; i++)
+    {
+        float currentAngle = angle * i;
+        float x = radius * cos(glm::radians(currentAngle));
+        float y = radius * sin(glm::radians(currentAngle));
+        float z = 0.0f;
+
+        temp.push_back(glm::vec3(x, y, z));
+    }
+
+    for (int i = 0; i < triangleCount; i++)
+    {
+        verticesC.push_back(temp[0]);
+        verticesC.push_back(temp[i + 1]);
+        verticesC.push_back(temp[i + 2]);
+    }
+}
+
 
 int main()
 {
@@ -157,14 +188,26 @@ int main()
         -0.5f, -0.5f, 0.0f,  // bottom left
         -0.5f,  0.5f, 0.0f   // top left 
     };
+
+    float texCoords[] = {
+     1.0f, 1.1f,  // lower-left corner  
+     1.0f, 0.0f,  // lower-right corner
+     0.0f, 0.0f,
+     0.0f,1.0f// top-center corner
+    };
+
     unsigned int indices[] = {  // note that we start from 0!
         0, 1, 3,  // first Triangle
         1, 2, 3   // second Triangle
     };
-    unsigned int VBO, VAO, EBO;
+
+
+
+    unsigned int VBO, VAO, EBO,TEX;
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
     glGenBuffers(1, &EBO);
+    glGenBuffers(1, &TEX);
 
     glBindVertexArray(VAO);
 
@@ -177,46 +220,90 @@ int main()
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
     
+    glBindBuffer(GL_ARRAY_BUFFER, TEX);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(texCoords), texCoords, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(1);
+
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     glBindVertexArray(0);
 
-    Object blocks[38];
+    buildCircle(0.1, 12);
+
+    unsigned int VAO2,VBO2;
+    glGenVertexArrays(1, &VAO2);
+    glBindVertexArray(VAO2);
+
+    glGenBuffers(1, &VBO2);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO2);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(verticesC), verticesC.data(), GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    glBindBuffer(GL_ARRAY_BUFFER, TEX);
+
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(1);
 
 
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    glBindVertexArray(0);
+
+
+    Object blocks[57];
+
+    unsigned int texture1;
+   
+    glGenTextures(1, &texture1);
+    glBindTexture(GL_TEXTURE_2D, texture1);
+
+    GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT));	
+    GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT));
+
+    GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
+    GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+    
+    int width, height, nrChannels;
+    stbi_set_flip_vertically_on_load(true); 
+   
+    unsigned char* data = stbi_load("res/textures/block.png", &width, &height, &nrChannels, 0);
+    if (data)
+    {
+        GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data));
+        GLCall(glGenerateMipmap(GL_TEXTURE_2D));
+    }
+    else
+    {
+        std::cout << "Failed to load texture" << std::endl;
+    }
+    stbi_image_free(data);
+
+    
         blocks[0].isAlive = true;
         blocks[0].position = { -4.5f,4.5f,0.0f };
         blocks[0].model = glm::mat4(1.f);
         blocks[0].model = glm::scale(blocks[0].model, glm::vec3(0.2f, 0.2f, 1.0f));
         blocks[0].model = glm::translate(blocks[0].model, blocks[0].position);
-        blocks[0].color = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
-
-
+        blocks[0].color = glm::vec4(0.5f, 0.0f, 0.0f, 1.0f);
         for (int i = 1; i < 19; i++)
         {
             blocks[i].isAlive = true;
-            blocks[i].position = { blocks[i-1].position.x + 0.5,blocks[i - 1].position.y,blocks[i - 1].position.z};
+            blocks[i].position = { blocks[i - 1].position.x + 0.5,blocks[i - 1].position.y,blocks[i - 1].position.z };
             blocks[i].model = glm::mat4(1.f);
             blocks[i].model = glm::scale(blocks[i].model, glm::vec3(0.2f, 0.2f, 1.0f));
             blocks[i].model = glm::translate(blocks[i].model, blocks[i].position);
-
-            if(i % 2 == 0)
-            blocks[i].color = glm::vec4( 0.0f, i*0.3f,  0.0f,1.0f);
-
-            if (i % 3 == 0)
-                blocks[i].color = glm::vec4(i* 0.1f,  0.0f,  0.0f, 1.0f);
-
-            if (i % 5 == 0)
-                blocks[i].color = glm::vec4( 0.0f, 0.0f,  i *0.4f, 1.0f);
+            blocks[i].color = glm::vec4(0.5f, 0.0f, 0.0f, 1.0f);
         }
-
         blocks[19].isAlive = true;
         blocks[19].position = { -4.5f,3.5f,0.0f };
         blocks[19].model = glm::mat4(1.f);
         blocks[19].model = glm::scale(blocks[19].model, glm::vec3(0.2f, 0.2f, 1.0f));
         blocks[19].model = glm::translate(blocks[19].model, blocks[19].position);
-        blocks[19].color = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
-
+        blocks[19].color = glm::vec4(1.0f, 0.5f, 0.2f, 1.0f);
         for (int i = 20; i < 38; i++)
         {
             blocks[i].isAlive = true;
@@ -224,28 +311,58 @@ int main()
             blocks[i].model = glm::mat4(1.f);
             blocks[i].model = glm::scale(blocks[i].model, glm::vec3(0.2f, 0.2f, 1.0f));
             blocks[i].model = glm::translate(blocks[i].model, blocks[i].position);
+            blocks[i].color = glm::vec4(1.0f, 0.5f, 0.2f, 1.0f);
+        }
+        blocks[38].isAlive = true;
+        blocks[38].position = { -4.5f,2.5f,0.0f };
+        blocks[38].model = glm::mat4(1.f);
+        blocks[38].model = glm::scale(blocks[38].model, glm::vec3(0.2f, 0.2f, 1.0f));
+        blocks[38].model = glm::translate(blocks[38].model, blocks[38].position);
+        blocks[38].color = glm::vec4(0.0f, 0.3f, 0.0f, 1.0f);
+        for (int i = 39; i < 57; i++)
+        {
+            blocks[i].isAlive = true;
+            blocks[i].position = { blocks[i - 1].position.x + 0.5f,blocks[i - 1].position.y,blocks[i - 1].position.z };
+            blocks[i].model = glm::mat4(1.f);
+            blocks[i].model = glm::scale(blocks[i].model, glm::vec3(0.2f, 0.2f, 1.0f));
+            blocks[i].model = glm::translate(blocks[i].model, blocks[i].position);
 
-            if (i % 2 == 0)
-                blocks[i].color = glm::vec4(0.0f, i * 0.3f, 0.0f, 1.0f);
-
-            if (i % 3 == 0)
-                blocks[i].color = glm::vec4(i * 0.1f, 0.0f, 0.0f, 1.0f);
-
-            if (i % 5 == 0)
-                blocks[i].color = glm::vec4(0.0f, 0.0f, i * 0.4f, 1.0f);
+            blocks[i].color = glm::vec4(0.0f, 0.3f, 0.0f, 1.0f);
         }
 
+        Object object;
+        object.color = glm::vec4(1.0f, 0.5f, 0.2f, 1.0f);
+        object.isAlive = true;
+        object.position = glm::vec3(0.0f, -17.0f, 0.0f);
+        object.model = glm::mat4(1.0f);
+        object.model = glm::scale(object.model, glm::vec3(0.2f, 0.05, 1.0f));
+        object.model = glm::translate(object.model, object.position);
+
+        glm::vec3 playerActualPosition = glm::vec3(1.0f);
+        glActiveTexture(GL_TEXTURE0);
+        glUniform1i(glGetUniformLocation(shaderProgram, "texture_v"), texture1);
+
+
+        Object player;
+        player.color = glm::vec4(1.0f, 0.5f, 0.2f, 1.0f);
+        player.isAlive = true;
+        player.position = glm::vec3(0.0f, -17.0f, 0.0f);
+        player.model = glm::mat4(1.0f);
+        player.model = glm::scale(player.model, glm::vec3(0.2f, 0.05, 1.0f));
+        player.model = glm::translate(player.model, player.position);
+    
+        
     while (!glfwWindowShouldClose(window))
     {
-
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
      
         glUseProgram(shaderProgram);
         glBindVertexArray(VAO); 
+        glBindTexture(GL_TEXTURE_2D, texture1);
 
-        for (int i = 0; i < 38; i++)
+        for (int i = 0; i < 57; i++)
         {
             GLCall(glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "model"), 1, GL_FALSE, glm::value_ptr(blocks[i].model)));
             GLCall(glUniform4f(glGetUniformLocation(shaderProgram, "color"),blocks[i].color.x,blocks[i].color.y,blocks[i].color.z,blocks[i].color.a));
@@ -253,7 +370,17 @@ int main()
             if(blocks[i].isAlive)
               glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         }
-      
+
+        GLCall(glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "model"), 1, GL_FALSE, glm::value_ptr(object.model)));
+        GLCall(glUniform4f(glGetUniformLocation(shaderProgram, "color"), object.color.x, object.color.y, object.color.z, object.color.a));
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        playerActualPosition = glm::vec3(object.position.x, object.position.y / 4, object.position.z);
+        
+        glBindVertexArray(VAO2);
+        GLCall(glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "model"), 1, GL_FALSE, glm::value_ptr(player.model)));
+        GLCall(glUniform4f(glGetUniformLocation(shaderProgram, "color"), player.color.x, player.color.y, player.color.z, player.color.a));
+        glDrawArrays(GL_TRIANGLES, 0, verticesC.size());
+
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
