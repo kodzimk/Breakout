@@ -27,7 +27,6 @@
     <None Include="src\Vertex_Shader.vertex" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\config.h" />
     <ClInclude Include="src\stb_image.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
