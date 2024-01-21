@@ -102,7 +102,7 @@ static ShaderProgramSource ParseShaders(const std::string& filepath, const std::
 
 }
 
-std::vector<glm::vec3> verticesC; //
+std::vector<glm::vec3> verticesC; 
 
 void buildCircle(float radius, int vCount)
 {
@@ -133,8 +133,7 @@ void buildCircle(float radius, int vCount)
 
 int main()
 {
-    // glfw: initialize and configure
-    // ------------------------------
+  
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -144,8 +143,6 @@ int main()
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 
-    // glfw window creation
-    // --------------------
     GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "LearnOpenGL", NULL, NULL);
     if (window == NULL)
     {
@@ -183,25 +180,23 @@ int main()
     glDeleteShader(fragmentShader);
 
     float vertices[] = {
-         0.5f,  0.5f, 0.0f,  // top right
-         0.5f, -0.5f, 0.0f,  // bottom right
-        -0.5f, -0.5f, 0.0f,  // bottom left
-        -0.5f,  0.5f, 0.0f   // top left 
-    };
+         0.5f,  0.5f, 0.0f,  
+         0.5f, -0.5f, 0.0f,  
+        -0.5f, -0.5f, 0.0f,  
+        -0.5f,  0.5f, 0.0f   
+   };
 
     float texCoords[] = {
-     1.0f, 1.1f,  // lower-left corner  
-     1.0f, 0.0f,  // lower-right corner
+     1.0f, 1.1f, 
+     1.0f, 0.0f, 
      0.0f, 0.0f,
-     0.0f,1.0f// top-center corner
+     0.0f,1.0f   
     };
 
-    unsigned int indices[] = {  // note that we start from 0!
-        0, 1, 3,  // first Triangle
-        1, 2, 3   // second Triangle
+    unsigned int indices[] = {  
+        0, 1, 3,  
+        1, 2, 3   
     };
-
-
 
     unsigned int VBO, VAO, EBO,TEX;
     glGenVertexArrays(1, &VAO);
@@ -230,7 +225,7 @@ int main()
 
     glBindVertexArray(0);
 
-    buildCircle(0.1, 12);
+    buildCircle(1, 120);
 
     unsigned int VAO2,VBO2;
     glGenVertexArrays(1, &VAO2);
@@ -238,16 +233,10 @@ int main()
 
     glGenBuffers(1, &VBO2);
     glBindBuffer(GL_ARRAY_BUFFER, VBO2);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(verticesC), verticesC.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) *verticesC.size(), verticesC.data(), GL_STATIC_DRAW);
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
-
-    glBindBuffer(GL_ARRAY_BUFFER, TEX);
-
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(1);
-
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
@@ -339,16 +328,19 @@ int main()
         object.model = glm::translate(object.model, object.position);
 
         glm::vec3 playerActualPosition = glm::vec3(1.0f);
-        glActiveTexture(GL_TEXTURE0);
-        glUniform1i(glGetUniformLocation(shaderProgram, "texture_v"), texture1);
+        glm::vec3 objectActualPosition = glm::vec3(1.0f);
 
+      
+        glUniform1i(glGetUniformLocation(shaderProgram, "texture_v"), texture1);
+     
 
         Object player;
+
         player.color = glm::vec4(1.0f, 0.5f, 0.2f, 1.0f);
         player.isAlive = true;
-        player.position = glm::vec3(0.0f, -17.0f, 0.0f);
+        player.position = glm::vec3(0.0f, -15.5f, 0.0f);
         player.model = glm::mat4(1.0f);
-        player.model = glm::scale(player.model, glm::vec3(0.2f, 0.05, 1.0f));
+        player.model = glm::scale(player.model, glm::vec3(0.05f, 0.05f, 1.0f));
         player.model = glm::translate(player.model, player.position);
     
         
@@ -360,8 +352,7 @@ int main()
      
         glUseProgram(shaderProgram);
         glBindVertexArray(VAO); 
-        glBindTexture(GL_TEXTURE_2D, texture1);
-
+ 
         for (int i = 0; i < 57; i++)
         {
             GLCall(glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "model"), 1, GL_FALSE, glm::value_ptr(blocks[i].model)));
@@ -374,9 +365,11 @@ int main()
         GLCall(glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "model"), 1, GL_FALSE, glm::value_ptr(object.model)));
         GLCall(glUniform4f(glGetUniformLocation(shaderProgram, "color"), object.color.x, object.color.y, object.color.z, object.color.a));
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-        playerActualPosition = glm::vec3(object.position.x, object.position.y / 4, object.position.z);
-        
+        playerActualPosition = glm::vec3(player.position.x / 4, player.position.y / 4, player.position.z);
+        objectActualPosition = glm::vec3(object.position.x, object.position.y / 4, object.position.z);
+
         glBindVertexArray(VAO2);
+      
         GLCall(glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "model"), 1, GL_FALSE, glm::value_ptr(player.model)));
         GLCall(glUniform4f(glGetUniformLocation(shaderProgram, "color"), player.color.x, player.color.y, player.color.z, player.color.a));
         glDrawArrays(GL_TRIANGLES, 0, verticesC.size());
