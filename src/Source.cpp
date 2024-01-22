@@ -131,6 +131,72 @@ void buildCircle(float radius, int vCount)
 }
 
 
+bool isEnemyCollide(glm::vec3 player,glm::vec3 object)
+{
+
+        glm::vec3 box1right = glm::vec3(1.0f);
+        glm::vec3 box1Left = glm::vec3(1.0f);
+
+        glm::vec3 box2right  = glm::vec3(1.0f);
+        glm::vec3 box2Left = glm::vec3(1.0f);
+
+        box1right.x = player.x;
+        box1right.y = player.y;
+
+        box1Left.x = player.x + 0.1f;
+        box1Left.y = player.y + 0.1f;
+
+        box2right.x = object.x;
+        box2right.y = object.y;
+
+        box2Left.x = 1.f + object.x;
+        box2Left.y = 1.2f + object.y;
+
+        if (box2right.x <= box1Left.x &&
+            box2Left.x >= box1right.x &&
+            box2right.y <= box1Left.y &&
+            box2Left.y >= box1right.y)
+        {
+            return true;
+        }
+    
+    return false;
+}
+
+bool isObjectCollide(glm::vec3 player, glm::vec3 object)
+{
+
+    glm::vec3 box1right = glm::vec3(1.0f);
+    glm::vec3 box1Left = glm::vec3(1.0f);
+
+    glm::vec3 box2right = glm::vec3(1.0f);
+    glm::vec3 box2Left = glm::vec3(1.0f);
+
+    box1right.x = player.x;
+    box1right.y = player.y;
+
+    box1Left.x = player.x + 0.1f;
+    box1Left.y = player.y + 0.1f;
+
+    box2right.x = object.x;
+    box2right.y = object.y;
+
+    box2Left.x = 1.f + object.x;
+    box2Left.y = 0.2f + object.y;
+
+    if (box2right.x <= box1Left.x &&
+        box2Left.x >= box1right.x &&
+        box2right.y <= box1Left.y &&
+        box2Left.y >= box1right.y)
+    {
+        return true;
+    }
+
+    return false;
+}
+
+
+
 int main()
 {
   
@@ -273,51 +339,54 @@ int main()
 
     
         blocks[0].isAlive = true;
-        blocks[0].position = { -4.5f,4.5f,0.0f };
+        blocks[0].position = { -9.5f,4.5f,0.0f };
         blocks[0].model = glm::mat4(1.f);
-        blocks[0].model = glm::scale(blocks[0].model, glm::vec3(0.2f, 0.2f, 1.0f));
+        blocks[0].model = glm::scale(blocks[0].model, glm::vec3(0.1f, 0.2f, 1.0f));
         blocks[0].model = glm::translate(blocks[0].model, blocks[0].position);
         blocks[0].color = glm::vec4(0.5f, 0.0f, 0.0f, 1.0f);
         for (int i = 1; i < 19; i++)
         {
             blocks[i].isAlive = true;
-            blocks[i].position = { blocks[i - 1].position.x + 0.5,blocks[i - 1].position.y,blocks[i - 1].position.z };
+            blocks[i].position = { blocks[i - 1].position.x + 1.f,blocks[i - 1].position.y,blocks[i - 1].position.z };
             blocks[i].model = glm::mat4(1.f);
-            blocks[i].model = glm::scale(blocks[i].model, glm::vec3(0.2f, 0.2f, 1.0f));
+            blocks[i].model = glm::scale(blocks[i].model, glm::vec3(0.1f, 0.2f, 1.0f));
             blocks[i].model = glm::translate(blocks[i].model, blocks[i].position);
             blocks[i].color = glm::vec4(0.5f, 0.0f, 0.0f, 1.0f);
         }
         blocks[19].isAlive = true;
-        blocks[19].position = { -4.5f,3.5f,0.0f };
+        blocks[19].position = { -9.5f,3.5f,0.0f };
         blocks[19].model = glm::mat4(1.f);
-        blocks[19].model = glm::scale(blocks[19].model, glm::vec3(0.2f, 0.2f, 1.0f));
+        blocks[19].model = glm::scale(blocks[19].model, glm::vec3(0.1f, 0.2f, 1.0f));
         blocks[19].model = glm::translate(blocks[19].model, blocks[19].position);
         blocks[19].color = glm::vec4(1.0f, 0.5f, 0.2f, 1.0f);
+
         for (int i = 20; i < 38; i++)
         {
             blocks[i].isAlive = true;
-            blocks[i].position = { blocks[i - 1].position.x + 0.5f,blocks[i - 1].position.y,blocks[i - 1].position.z };
+            blocks[i].position = { blocks[i - 1].position.x + 1.f,blocks[i - 1].position.y,blocks[i - 1].position.z };
             blocks[i].model = glm::mat4(1.f);
-            blocks[i].model = glm::scale(blocks[i].model, glm::vec3(0.2f, 0.2f, 1.0f));
+            blocks[i].model = glm::scale(blocks[i].model, glm::vec3(0.1f, 0.2f, 1.0f));
             blocks[i].model = glm::translate(blocks[i].model, blocks[i].position);
             blocks[i].color = glm::vec4(1.0f, 0.5f, 0.2f, 1.0f);
         }
         blocks[38].isAlive = true;
-        blocks[38].position = { -4.5f,2.5f,0.0f };
+        blocks[38].position = { -9.5f,2.5f,0.0f };
         blocks[38].model = glm::mat4(1.f);
-        blocks[38].model = glm::scale(blocks[38].model, glm::vec3(0.2f, 0.2f, 1.0f));
+        blocks[38].model = glm::scale(blocks[38].model, glm::vec3(0.1f, 0.2f, 1.0f));
         blocks[38].model = glm::translate(blocks[38].model, blocks[38].position);
         blocks[38].color = glm::vec4(0.0f, 0.3f, 0.0f, 1.0f);
         for (int i = 39; i < 57; i++)
         {
             blocks[i].isAlive = true;
-            blocks[i].position = { blocks[i - 1].position.x + 0.5f,blocks[i - 1].position.y,blocks[i - 1].position.z };
+            blocks[i].position = { blocks[i - 1].position.x + 1.f,blocks[i - 1].position.y,blocks[i - 1].position.z };
             blocks[i].model = glm::mat4(1.f);
-            blocks[i].model = glm::scale(blocks[i].model, glm::vec3(0.2f, 0.2f, 1.0f));
+            blocks[i].model = glm::scale(blocks[i].model, glm::vec3(0.1f, 0.2f, 1.0f));
             blocks[i].model = glm::translate(blocks[i].model, blocks[i].position);
 
             blocks[i].color = glm::vec4(0.0f, 0.3f, 0.0f, 1.0f);
         }
+
+
 
         Object object;
         object.color = glm::vec4(1.0f, 0.5f, 0.2f, 1.0f);
@@ -342,7 +411,13 @@ int main()
         player.model = glm::mat4(1.0f);
         player.model = glm::scale(player.model, glm::vec3(0.05f, 0.05f, 1.0f));
         player.model = glm::translate(player.model, player.position);
-    
+
+        glm::vec3  playerPos = { 0.0f,0.0f,0.0f };
+
+        bool isPressed = false;
+        float speedY = 0.0f;
+        float speedX = 0.0f;
+        bool collide = false;
         
     while (!glfwWindowShouldClose(window))
     {
@@ -360,15 +435,49 @@ int main()
            
             if(blocks[i].isAlive)
               glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+            if (isEnemyCollide(playerActualPosition, blocks[i].position)&&blocks[i].isAlive)
+            {
+                blocks[i].isAlive = false;
+                speedY = -0.00003f;
+                playerPos.y = -0.002f;
+            }
         }
+
+        if (glfwGetKey(window, GLFW_KEY_SPACE) > 0 && !isPressed)
+        {
+            isPressed = true;
+            speedY = 0.00003f;
+        }
+
+
+        if (speedY > 0.0f || speedY < 0.0f) {
+
+            playerPos.y = playerPos.y + speedY;
+
+            player.model = glm::translate(player.model, playerPos);
+            player.position += playerPos;
+        }
+
+        if (isObjectCollide(playerActualPosition, objectActualPosition))
+        {
+            playerPos.y = 0.001f;
+            speedY = 0.00003f;
+        }
+        
 
         GLCall(glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "model"), 1, GL_FALSE, glm::value_ptr(object.model)));
         GLCall(glUniform4f(glGetUniformLocation(shaderProgram, "color"), object.color.x, object.color.y, object.color.z, object.color.a));
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-        playerActualPosition = glm::vec3(player.position.x / 4, player.position.y / 4, player.position.z);
+
+
+        playerActualPosition = glm::vec3(player.position.x / 2, player.position.y / 4, player.position.z);
         objectActualPosition = glm::vec3(object.position.x, object.position.y / 4, object.position.z);
 
         glBindVertexArray(VAO2);
+
+
+
       
         GLCall(glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "model"), 1, GL_FALSE, glm::value_ptr(player.model)));
         GLCall(glUniform4f(glGetUniformLocation(shaderProgram, "color"), player.color.x, player.color.y, player.color.z, player.color.a));
