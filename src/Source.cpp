@@ -418,6 +418,7 @@ int main()
         float speedY = 0.0f;
         float speedX = 0.0f;
         bool collide = false;
+        glm::vec3 playerPosX = glm::vec3(1.0f);
         
     while (!glfwWindowShouldClose(window))
     {
@@ -450,6 +451,12 @@ int main()
             speedY = 0.00003f;
         }
 
+        if (player.position.y < -20.f)
+        {
+            std::cout << "Game over";
+            return -2;
+        }
+
 
         if (speedY > 0.0f || speedY < 0.0f) {
 
@@ -463,6 +470,19 @@ int main()
         {
             playerPos.y = 0.001f;
             speedY = 0.00003f;
+        }
+
+        if (glfwGetKey(window, GLFW_KEY_A) > 0)
+        {
+            playerPosX -= 0.000003f;
+            object.model = glm::translate(object.model, playerPosX);
+            object.position += playerPosX;
+        }
+        else if (glfwGetKey(window, GLFW_KEY_D) > 0)
+        {
+            playerPosX += 0.000003f;
+            object.model = glm::translate(object.model, playerPosX);
+            object.position += playerPosX;
         }
         
 
