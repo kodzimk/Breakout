@@ -182,7 +182,7 @@ bool isObjectCollide(glm::vec3 player, glm::vec3 object)
     box2right.y = object.y;
 
     box2Left.x = 1.f + object.x;
-    box2Left.y = 0.2f + object.y;
+    box2Left.y = 0.5f + object.y;
 
     if (box2right.x <= box1Left.x &&
         box2Left.x >= box1right.x &&
@@ -227,7 +227,7 @@ int main()
     ShaderProgramSource src = ParseShaders("src/Vertex_Shader.vertex", "src/Frag_Shader.frag");
     const GLchar* vertexShaderSource = src.VertexSource.c_str();
     const GLchar* fragmentShaderSource = src.FragmentSource.c_str();
-    std::cout << vertexShaderSource;
+
     unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
     glCompileShader(vertexShader);
@@ -290,6 +290,7 @@ int main()
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     glBindVertexArray(0);
+
 
     buildCircle(1, 120);
 
@@ -418,7 +419,7 @@ int main()
         float speedY = 0.0f;
         float speedX = 0.0f;
         bool collide = false;
-        glm::vec3 playerPosX = glm::vec3(1.0f);
+        glm::vec3 playerPosX = { 0.0f,0.0f,0.0f };
         
     while (!glfwWindowShouldClose(window))
     {
@@ -451,7 +452,7 @@ int main()
             speedY = 0.00003f;
         }
 
-        if (player.position.y < -20.f)
+        if (player.position.y < -21.f)
         {
             std::cout << "Game over";
             return -2;
@@ -474,13 +475,13 @@ int main()
 
         if (glfwGetKey(window, GLFW_KEY_A) > 0)
         {
-            playerPosX -= 0.000003f;
+            playerPosX.x -= 0.00003f;
             object.model = glm::translate(object.model, playerPosX);
             object.position += playerPosX;
         }
         else if (glfwGetKey(window, GLFW_KEY_D) > 0)
         {
-            playerPosX += 0.000003f;
+            playerPosX.x += 0.00003f;
             object.model = glm::translate(object.model, playerPosX);
             object.position += playerPosX;
         }
